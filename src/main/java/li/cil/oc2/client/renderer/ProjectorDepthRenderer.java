@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,11 +49,18 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.nio.IntBuffer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
 import static org.lwjgl.opengl.GL11.GL_NONE;
 import static org.lwjgl.opengl.GL11.glDrawBuffer;
@@ -386,7 +394,19 @@ public final class ProjectorDepthRenderer {
      * into the existing main render target output.
      */
     private static void renderProjectorColors(final Minecraft minecraft, final Matrix4f modelViewMatrix, final Matrix4f projectionMatrix, final int projectorCount) {
+        // Store the texture binding
+        IntBuffer previousTextureBuffer = BufferUtils.createIntBuffer(1);
+        GL11.glGetIntegerv(GL13.GL_ACTIVE_TEXTURE, previousTextureBuffer);
+        int previousTextureUnit = previousTextureBuffer.get(0);
+        previousTextureBuffer.rewind();
+
+        IntBuffer previousBoundTextureBuffer = BufferUtils.createIntBuffer(1);
+        GL11.glGetIntegerv(GL11.GL_TEXTURE_BINDING_2D, previousBoundTextureBuffer);
+        int previousBoundTexture = previousBoundTextureBuffer.get(0);
+        previousBoundTextureBuffer.rewind();
+
         prepareColorBufferRendering();
+        final ShaderInstance previousShader = RenderSystem.getShader();
         try {
             prepareOrthographicRendering(minecraft);
 
@@ -403,6 +423,12 @@ public final class ProjectorDepthRenderer {
             renderIntoScreenRect();
         } finally {
             finishColorBufferRendering();
+            RenderSystem.setShader(() -> previousShader);
+            ((MinecraftExt) minecraft).setMainRenderTargetOverride(null);
+
+            // Restore the texture binding
+            GL13.glActiveTexture(previousTextureUnit);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousBoundTexture);
         }
     }
 
