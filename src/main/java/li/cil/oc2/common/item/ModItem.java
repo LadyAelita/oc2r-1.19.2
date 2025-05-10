@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ModItem extends Item {
     public ModItem(final Properties properties) {
-        super(properties);
+        super(properties.tab(ItemGroup.COMMON_TAB));
     }
 
     public ModItem() {
