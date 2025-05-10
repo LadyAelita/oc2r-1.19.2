@@ -40,7 +40,7 @@ gradle.projectsEvaluated {
         }
 
         // senda
-        def sednaUrl = "https://github.com/${senda_repo}/releases/download/${minecraft_version}-${minecraft_sdk}/${sedna_version}/sedna-${minecraft_version}-${minecraft_sdk}-${sedna_version}+${sedna_version_commit_ref}.jar"
+        def sednaUrl = "https://github.com/${senda_repo}/releases/download/1.19.2-${minecraft_sdk}/${sedna_version}/sedna-1.19.2-${minecraft_sdk}-${sedna_version}+${sedna_version_commit_ref}.jar"
         def sednaFile = new File('libs', 'sedna.jar')
         sednaFile.parentFile.mkdirs()
         def url = new URL("${sednaUrl}")
