@@ -2,6 +2,7 @@
 
 package li.cil.oc2.client;
 
+import li.cil.oc2.api.bus.device.DeviceType;
 import li.cil.oc2.client.gui.*;
 import li.cil.oc2.client.item.CustomItemColors;
 import li.cil.oc2.client.item.CustomItemModelProperties;
@@ -14,19 +15,25 @@ import li.cil.oc2.client.renderer.entity.RobotRenderer;
 import li.cil.oc2.client.renderer.entity.model.RobotModel;
 import li.cil.oc2.common.block.Blocks;
 import li.cil.oc2.common.blockentity.BlockEntities;
+import li.cil.oc2.common.bus.device.DeviceTypes;
 import li.cil.oc2.common.config.Config;
 import li.cil.oc2.common.container.Containers;
 import li.cil.oc2.common.entity.Entities;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import java.util.Objects;
+
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
@@ -78,6 +85,24 @@ public final class ClientSetup {
     @SubscribeEvent
     public static void handleColorHandler(final RegisterColorHandlersEvent.Block event) {
         event.register(new BusCableBlockColor(), Blocks.BUS_CABLE.get());
+    }
+
+    @SubscribeEvent
+    public static void handleTextureStitchEvent(final TextureStitchEvent.Pre event) {
+        if (!Objects.equals(event.getAtlas().location(), InventoryMenu.BLOCK_ATLAS)) {
+            return;
+        }
+
+        for (final var deviceTypeEntry : DeviceTypes.DEVICE_TYPE_REGISTRY.get().getEntries()) {
+            final DeviceType deviceType = deviceTypeEntry.getValue();
+            event.addSprite(deviceType.getBackgroundIcon());
+        }
+
+        event.addSprite(ComputerRenderer.OVERLAY_POWER_LOCATION);
+        event.addSprite(ComputerRenderer.OVERLAY_STATUS_LOCATION);
+        event.addSprite(ComputerRenderer.OVERLAY_TERMINAL_LOCATION);
+
+        event.addSprite(ChargerRenderer.EFFECT_LOCATION);
     }
 
     @SubscribeEvent
