@@ -11,10 +11,12 @@ import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -64,6 +66,13 @@ public final class BusInterfaceItem extends ModBlockItem {
     @Override
     public String getDescriptionId() {
         return getOrCreateDescriptionId();
+    }
+
+    @Override
+    public void fillItemCategory(final CreativeModeTab tab, final NonNullList<ItemStack> items) {
+        if (this.allowedIn(tab)) {
+            items.add(new ItemStack(this));
+        }
     }
 
     @Override
