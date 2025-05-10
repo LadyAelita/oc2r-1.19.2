@@ -141,7 +141,7 @@ public final class BusCableBlockEntity extends ModBlockEntity {
             stack = ItemStack.EMPTY;
         }
 
-        if (ItemStack.isSameItem(stack, facade)) {
+        if (ItemStack.isSame(stack, facade)) {
             return;
         }
 
@@ -182,7 +182,7 @@ public final class BusCableBlockEntity extends ModBlockEntity {
 
     public void handleNeighborChanged(final BlockPos pos) {
         final BlockPos toPos = pos.subtract(getBlockPos());
-        final Direction side = Direction.fromDelta(toPos.getX(), toPos.getY(), toPos.getZ());
+        final Direction side = Direction.fromNormal(toPos.getX(), toPos.getY(), toPos.getZ());
         if (side != null) {
             busElement.updateDevicesForNeighbor(side);
         }

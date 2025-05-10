@@ -39,11 +39,11 @@ public class InternetCardSpec {
         deniedHosts = builder.comment("A list of hosts (IPs) that VMs are not allowed to access",
             "By default all local network address are disallowed, we recommend leaving it this way",
             "Only denied hosts or allowed hosts may have a value, or an error will occur"
-        ).defineListAllowEmpty("deniedHosts", Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10", "172.16.0.0/12", "192.168.0.0/16", "224.0.0.0/4"), obj -> obj instanceof String && !((String) obj).trim().isEmpty());
+        ).defineList("deniedHosts", Arrays.asList("127.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10", "172.16.0.0/12", "192.168.0.0/16", "224.0.0.0/4"), obj -> obj instanceof String && !((String) obj).trim().isEmpty());
 
         allowedHosts = builder.comment("A list of hosts (IPs) that VMs are allowed to access",
             "Only denied hosts or allowed hosts may have a value, or an error will occur"
-        ).defineListAllowEmpty("deniedHosts", List.of(), obj -> obj instanceof String && !((String) obj).trim().isEmpty());
+        ).defineList("deniedHosts", List.of(), obj -> obj instanceof String && !((String) obj).trim().isEmpty());
 
         defaultNameServer = builder.comment("The default nameserver to be used")
             .define("defaultNameServer", "1.1.1.1");

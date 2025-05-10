@@ -5,19 +5,17 @@ package li.cil.oc2.common.item.crafting;
 import com.google.gson.JsonObject;
 import li.cil.oc2.common.integration.Wrenches;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.jetbrains.annotations.Nullable;
 
 public final class WrenchRecipe extends ShapelessRecipe {
     public WrenchRecipe(final ShapelessRecipe recipe) {
-        super(recipe.getId(), recipe.getGroup(), CraftingBookCategory.MISC, recipe.getResultItem(RegistryAccess.EMPTY), recipe.getIngredients());
+        super(recipe.getId(), recipe.getGroup(), recipe.getResultItem(), recipe.getIngredients());
     }
 
     @Override

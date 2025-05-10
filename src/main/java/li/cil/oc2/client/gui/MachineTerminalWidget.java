@@ -4,20 +4,20 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Matrix4f;
+
 import li.cil.oc2.common.vm.terminal.modes.MouseMode;
 import li.cil.oc2.common.vm.terminal.modes.PrivateMode;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
-import org.joml.Matrix4f;
 import li.cil.oc2.client.gui.terminal.TerminalInput;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
+import li.cil.oc2.common.util.Vector2i;
 import li.cil.oc2.common.vm.terminal.Terminal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -54,17 +54,17 @@ public final class MachineTerminalWidget {
         this.terminal = this.container.getTerminal();
     }
 
-    public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+    public void renderBackground(final PoseStack stack, final int mouseX, final int mouseY) {
         isMouseOverTerminal = isMouseOverTerminal(mouseX, mouseY);
 
-        Sprites.TERMINAL_SCREEN.draw(graphics, leftPos, topPos);
+        Sprites.TERMINAL_SCREEN.draw(stack, leftPos, topPos);
 
         if (shouldCaptureInput()) {
-            Sprites.TERMINAL_FOCUSED.draw(graphics, leftPos, topPos);
+            Sprites.TERMINAL_FOCUSED.draw(stack, leftPos, topPos);
         }
     }
 
-    public void render(final GuiGraphics graphics, @Nullable final Component error) {
+    public void render(final PoseStack stack, @Nullable final Component error) {
         if (container.getVirtualMachine().isRunning()) {
             final PoseStack terminalStack = new PoseStack();
             terminalStack.translate(leftPos + TERMINAL_X, topPos + TERMINAL_Y, 0);
@@ -75,7 +75,7 @@ public final class MachineTerminalWidget {
             }
 
             //final Matrix4f projectionMatrix = orthographic(0, parent.width, 0, parent.height, -10, 10f);
-            final Matrix4f projectionMatrix = (new Matrix4f()).setOrtho(0, parent.width, parent.height, 0, -10f, 10f);
+            final Matrix4f projectionMatrix = Matrix4f.orthographic(0, parent.width, 0, parent.height, -10f, 10f);
             rendererView.render(terminalStack, projectionMatrix);
         } else {
             final Font font = getClient().font;
@@ -85,7 +85,7 @@ public final class MachineTerminalWidget {
                 final int textOffsetY = (TERMINAL_HEIGHT - font.lineHeight) / 2;
                 drawShadow(
                     font,
-                    graphics,
+                    stack,
                     error,
                     leftPos + TERMINAL_X + textOffsetX,
                     topPos + TERMINAL_Y + textOffsetY
@@ -94,9 +94,9 @@ public final class MachineTerminalWidget {
         }
     }
 
-    private void drawShadow(Font font, GuiGraphics graphics, Component text, float x, float y) {
+    private void drawShadow(Font font, PoseStack stack, Component text, float x, float y) {
         var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        font.drawInBatch(text, x, y, 15610658, true, graphics.pose().last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880);
+        font.drawInBatch(text, x, y, 15610658, true, stack.last().pose(), batch, false, 0, 15728880);
         batch.endBatch();
     }
 

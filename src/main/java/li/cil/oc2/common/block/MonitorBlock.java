@@ -33,7 +33,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -63,8 +63,7 @@ public final class MonitorBlock extends HorizontalDirectionalBlock implements En
 
     public MonitorBlock() {
         super(Properties
-            .of()
-            .mapColor(MapColor.METAL)
+            .of(Material.METAL)
             .sound(SoundType.METAL)
             .lightLevel(state -> state.getValue(LIT) ? 8 : 0)
             .strength(1.5f, 6.0f));

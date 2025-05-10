@@ -3,10 +3,10 @@
 package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -33,34 +33,37 @@ public abstract class AbstractModContainerScreen<T extends AbstractContainerMenu
     }
 
     @Override
-    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(graphics);
+    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
+        renderBackground(stack);
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        super.render(stack, mouseX, mouseY, partialTicks);
 
-        renderFg(graphics, partialTicks, mouseX, mouseY);
+        renderFg(stack, partialTicks, mouseX, mouseY);
 
-        renderTooltip(graphics, mouseX, mouseY);
+        renderTooltip(stack, mouseX, mouseY);
     }
 
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    protected void renderTooltip(final GuiGraphics graphics, final int mouseX, final int mouseY) {
-        super.renderTooltip(graphics, mouseX, mouseY);
+    protected void renderTooltip(final PoseStack stack, final int mouseX, final int mouseY) {
+        super.renderTooltip(stack, mouseX, mouseY);
 
-        for (final Renderable widget : renderables) {
+        for (final Widget widget : renderables) {
             if (widget instanceof AbstractWidget abstractWidget) {
-                if(!abstractWidget.isHovered()) continue;
-                if(abstractWidget.getTooltip() == null) continue;
-                graphics.renderTooltip(Minecraft.getInstance().font, abstractWidget.getTooltip().toCharSequence(Minecraft.getInstance()), mouseX, mouseY);
+                if (!abstractWidget.isHoveredOrFocused()) continue;
+                try {
+                    abstractWidget.renderToolTip(stack, mouseX, mouseY);
+                } catch (Exception e) {
+                    continue;
+                }
             }
         }
     }
 
-    protected void renderFg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
+    protected void renderFg(final PoseStack stack, final float partialTicks, final int mouseX, final int mouseY) {
     }
 }

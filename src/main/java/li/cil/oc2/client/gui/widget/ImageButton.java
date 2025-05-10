@@ -3,15 +3,15 @@
 package li.cil.oc2.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+
+import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -61,13 +61,14 @@ public abstract class ImageButton extends AbstractButton {
     }
 
     @Override
-    public void renderWidget(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
+    public void renderButton(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
+        renderBackground(stack, mouseX, mouseY, partialTicks);
+        renderToolTip(stack, mouseX, mouseY);
     }
 
     ///////////////////////////////////////////////////////////////////
 
-    protected void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
+    protected void renderBackground(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
         RenderSystem.enableDepthTest();
 
         Sprite background = baseImage;
@@ -75,25 +76,31 @@ public abstract class ImageButton extends AbstractButton {
             background = pressedImage;
         }
 
-        background.draw(graphics, x, y);
+        background.draw(stack, x, y);
 
         if (!Objects.equals(getMessage(), Component.empty())) {
-            graphics.drawCenteredString(Minecraft.getInstance().font, getMessage(),
+            drawCenteredString(stack, Minecraft.getInstance().font, getMessage(),
                 x + width / 2, y + (height - 8) / 2,
                 getFGColor() | Mth.ceil(alpha * 255) << 24);
         }
     }
 
     @Override
-    @Nullable
-    public Tooltip getTooltip()
-    {
-        if (tooltip.stream().findFirst().isEmpty()) return null;
-        StringBuilder builder = new StringBuilder();
-        for(int i = 0; i < tooltip.size(); i++) {
-            builder.append(tooltip.get(i).getString()).append(i == tooltip.size() - 1 ? "" : "\n");
+    public void renderToolTip(final PoseStack stack, final int mouseX, final int mouseY) {
+        if (tooltip.isEmpty()) {
+            return;
         }
-        Component component = Component.literal(builder.toString());
-        return Tooltip.create(component);
+
+        if (isHoveredOrFocused()) {
+            if (hoveringStartedAt == 0) {
+                hoveringStartedAt = System.currentTimeMillis();
+            }
+
+            if ((System.currentTimeMillis() - hoveringStartedAt) > TOOLTIP_DELAY) {
+                TooltipUtils.drawTooltip(stack, tooltip, mouseX, mouseY, 200);
+            }
+        } else {
+            hoveringStartedAt = 0;
+        }
     }
 }

@@ -32,7 +32,7 @@ public final class MonitorDisplayContainer extends AbstractMonitorContainer {
 
     public static MonitorDisplayContainer createClient(final int id, final Inventory inventory, final FriendlyByteBuf data) {
         final BlockPos pos = data.readBlockPos();
-        final BlockEntity blockEntity = inventory.player.level().getBlockEntity(pos);
+        final BlockEntity blockEntity = inventory.player.level.getBlockEntity(pos);
         if (blockEntity instanceof final MonitorBlockEntity monitor) {
             return new MonitorDisplayContainer(id, inventory.player, monitor, createClientEnergyInfo());
         }

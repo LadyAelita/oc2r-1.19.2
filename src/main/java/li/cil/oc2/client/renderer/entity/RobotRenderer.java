@@ -4,7 +4,8 @@ package li.cil.oc2.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
+
 import li.cil.oc2.client.renderer.entity.model.RobotModel;
 import li.cil.oc2.common.entity.Robot;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -34,7 +35,7 @@ public final class RobotRenderer extends EntityRenderer<Robot> {
     @Override
     public void render(final Robot entity, final float entityYaw, final float partialTicks, final PoseStack stack, final MultiBufferSource bufferSource, final int packedLight) {
         final Robot.AnimationState state = entity.getAnimationState();
-        state.update(partialTicks, entity.level().random);
+        state.update(partialTicks, entity.level.random);
 
         stack.pushPose();
         // NB: we don't entityYaw given to use because that uses a plain lerp which can lead to ugly
@@ -43,7 +44,7 @@ public final class RobotRenderer extends EntityRenderer<Robot> {
         //     alternatively prevent this wrapping or patch the prev value instead.
         final float partialRotation = Mth.degreesDifferenceAbs(entity.yRotO, entity.getYRot()) * partialTicks;
         final float rotation = Mth.approachDegrees(entity.yRotO, entity.getYRot(), partialRotation);
-        stack.mulPose(Axis.YN.rotationDegrees(rotation));
+        stack.mulPose(Vector3f.YN.rotationDegrees(rotation));
 
         model.setupAnim(entity, 0, 0, 0, 0, 0);
 

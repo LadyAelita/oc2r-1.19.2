@@ -3,13 +3,14 @@
 package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
+
 import li.cil.oc2.client.gui.widget.ImageButton;
 import li.cil.oc2.client.gui.widget.ToggleImageButton;
 import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.container.AbstractMachineTerminalContainer;
 import li.cil.oc2.common.util.TooltipUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
@@ -126,7 +127,7 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
         terminalWidget.init();
 
         final EditBox focusIndicatorEditBox = new EditBox(font, 0, 0, 0, 0, Component.empty());
-        focusIndicatorEditBox.setFocused(true);
+        focusIndicatorEditBox.setFocus(true);
         setFocusIndicatorEditBox(focusIndicatorEditBox);
 
         addRenderableWidget(new ToggleImageButton(
@@ -137,8 +138,7 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
             Sprites.POWER_BUTTON_ACTIVE
         ) {
             @Override
-            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
-            }
+            public void updateNarration(final NarrationElementOutput narrationElementOutput) {}
 
             @Override
             public void onPress() {
@@ -163,8 +163,7 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
             Sprites.INPUT_BUTTON_ACTIVE
         ) {
             @Override
-            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
-            }
+            public void updateNarration(final NarrationElementOutput narrationElementOutput) {}
 
             @Override
             public void onPress() {
@@ -189,8 +188,7 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
             Sprites.INVENTORY_BUTTON_ACTIVE
         ) {
             @Override
-            protected void updateWidgetNarration(final NarrationElementOutput narrationElementOutput) {
-            }
+            public void updateNarration(final NarrationElementOutput narrationElementOutput) {}
 
             @Override
             public void onPress() {
@@ -213,35 +211,35 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
     protected abstract void setFocusIndicatorEditBox(final EditBox editBox);
 
     @Override
-    protected void renderFg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
-        super.renderFg(graphics, partialTicks, mouseX, mouseY);
+    protected void renderFg(final PoseStack stack, final float partialTicks, final int mouseX, final int mouseY) {
+        super.renderFg(stack, partialTicks, mouseX, mouseY);
 
         if (shouldRenderEnergyBar()) {
             final int x = leftPos - Sprites.SIDEBAR_2.width + 4;
             final int y = topPos + ENERGY_TOP + 4;
-            Sprites.ENERGY_BAR.drawFillY(graphics, x, y, menu.getEnergy() / (float) menu.getEnergyCapacity());
+            Sprites.ENERGY_BAR.drawFillY(stack, x, y, menu.getEnergy() / (float) menu.getEnergyCapacity());
         }
 
-        terminalWidget.render(graphics, menu.getVirtualMachine().getError());
+        terminalWidget.render(stack, menu.getVirtualMachine().getError());
     }
 
     @Override
-    protected void renderBg(final GuiGraphics graphics, final float partialTicks, final int mouseX, final int mouseY) {
-        Sprites.SIDEBAR_3.draw(graphics, leftPos - Sprites.SIDEBAR_3.width, topPos + CONTROLS_TOP);
+    protected void renderBg(final PoseStack stack, final float partialTicks, final int mouseX, final int mouseY) {
+        Sprites.SIDEBAR_3.draw(stack, leftPos - Sprites.SIDEBAR_3.width, topPos + CONTROLS_TOP);
 
         if (shouldRenderEnergyBar()) {
             final int x = leftPos - Sprites.SIDEBAR_2.width;
             final int y = topPos + ENERGY_TOP;
-            Sprites.SIDEBAR_2.draw(graphics, x, y);
-            Sprites.ENERGY_BASE.draw(graphics, x + 4, y + 4);
+            Sprites.SIDEBAR_2.draw(stack, x, y);
+            Sprites.ENERGY_BASE.draw(stack, x + 4, y + 4);
         }
 
-        terminalWidget.renderBackground(graphics, mouseX, mouseY);
+        terminalWidget.renderBackground(stack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderTooltip(final GuiGraphics graphics, final int mouseX, final int mouseY) {
-        super.renderTooltip(graphics, mouseX, mouseY);
+    protected void renderTooltip(final PoseStack stack, final int mouseX, final int mouseY) {
+        super.renderTooltip(stack, mouseX, mouseY);
 
         if (shouldRenderEnergyBar()) {
 
@@ -252,13 +250,13 @@ public abstract class AbstractMachineTerminalScreen<T extends AbstractMachineTer
                     Component.translatable(Constants.TOOLTIP_ENERGY_CONSUMPTION,
                         withFormat(String.valueOf(menu.getEnergyConsumption()), ChatFormatting.GREEN))
                 );
-                TooltipUtils.drawTooltip(graphics, tooltip, mouseX, mouseY, 200);
+                TooltipUtils.drawTooltip(stack, tooltip, mouseX, mouseY, 200);
             }
         }
     }
 
     @Override
-    protected void renderLabels(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+    protected void renderLabels(final PoseStack graphics, final int mouseX, final int mouseY) {
         // This is required to prevent the labels from being rendered
     }
 

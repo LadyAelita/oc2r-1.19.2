@@ -60,7 +60,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -220,13 +220,13 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
     }
 
     public void start() {
-        if (!level().isClientSide()) {
+        if (!level.isClientSide()) {
             virtualMachine.start();
         }
     }
 
     public void stop() {
-        if (!level().isClientSide()) {
+        if (!level.isClientSide()) {
             virtualMachine.stop();
         }
     }
@@ -262,12 +262,12 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         spawnAtLocation(stack);
 
         discard();
-        LevelUtils.playSound(level(), blockPosition(), SoundType.METAL, SoundType::getBreakSound);
+        LevelUtils.playSound(level, blockPosition(), SoundType.METAL, SoundType::getBreakSound);
     }
 
     @Override
     public void tick() {
-        final boolean isClient = level().isClientSide();
+        final boolean isClient = level.isClientSide();
 
         if (firstTick) {
             if (isClient) {
@@ -293,7 +293,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
 
         actionProcessor.tick();
 
-        if (!isClient && level() instanceof final ServerLevel serverLevel) {
+        if (!isClient && level instanceof final ServerLevel serverLevel) {
             final VoxelShape shape = Shapes.create(getBoundingBox());
             final Cursor3D iterator = getBlockPosIterator();
             while (iterator.advance()) {
@@ -311,7 +311,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
                 final VoxelShape blockShape = blockState.getCollisionShape(serverLevel, mutablePosition);
                 if (Shapes.joinIsNotEmpty(shape, blockShape.move(x, y, z), BooleanOp.AND)) {
                     final BlockEntity blockEntity = serverLevel.getBlockEntity(mutablePosition);
-                    final LootParams.Builder builder = new LootParams.Builder(serverLevel)
+                    final LootContext.Builder builder = new LootContext.Builder(serverLevel)
                         .withParameter(LootContextParams.THIS_ENTITY, this)
                         .withParameter(LootContextParams.ORIGIN, position())
                         .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
@@ -338,7 +338,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
     @Override
     public InteractionResult interact(final Player player, final InteractionHand hand) {
         final ItemStack stack = player.getItemInHand(hand);
-        if (!level().isClientSide()) {
+        if (!level.isClientSide()) {
             if (Wrenches.isWrench(stack)) {
                 if (player.isShiftKeyDown()) {
                     dropSelf();
@@ -354,11 +354,11 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
             }
         }
 
-        return InteractionResult.sidedSuccess(level().isClientSide());
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -366,7 +366,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
     public void setRemoved(final RemovalReason reason) {
         super.setRemoved(reason);
 
-        if (!level().isClientSide()) {
+        if (!level.isClientSide()) {
             // Full unload to release out-of-nbt persisted runtime-only data such as ram.
             virtualMachine.stop();
             virtualMachine.dispose();
@@ -467,7 +467,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
 
     @Override
     protected Vec3 limitPistonMovement(final Vec3 pos) {
-        lastPistonMovement = level().getGameTime();
+        lastPistonMovement = level.getGameTime();
         return super.limitPistonMovement(pos);
     }
 
@@ -489,7 +489,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
     }
 
     private void handleChunkUnload(final ChunkEvent.Unload event) {
-        if (event.getLevel() != level()) {
+        if (event.getLevel() != level) {
             return;
         }
 
@@ -504,7 +504,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
     }
 
     private void handleWorldUnload(final LevelEvent.Unload event) {
-        if (event.getLevel() != level()) {
+        if (event.getLevel() != level) {
             return;
         }
 
@@ -641,7 +641,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         }
 
         public void tick() {
-            if (level().isClientSide()) {
+            if (level.isClientSide()) {
                 RobotActions.performClient(Robot.this);
             } else {
                 if (action != null) {
@@ -727,7 +727,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         }
 
         private boolean addAction(final AbstractRobotAction action) {
-            if (level().isClientSide()) {
+            if (level.isClientSide()) {
                 return false;
             }
 
@@ -767,7 +767,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         @Override
         protected void onChanged() {
             super.onChanged();
-            if (!level().isClientSide()) {
+            if (!level.isClientSide()) {
                 virtualMachine.busController.scheduleBusScan();
             }
         }

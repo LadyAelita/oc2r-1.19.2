@@ -6,10 +6,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.ItemDisplayContext;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+
 import li.cil.oc2.client.gui.widget.Texture;
 import li.cil.oc2.client.renderer.ModRenderType;
 import li.cil.oc2.common.item.Items;
@@ -19,6 +18,7 @@ import li.cil.oc2.common.network.message.NetworkInterfaceCardConfigurationMessag
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -147,11 +147,11 @@ public final class NetworkInterfaceCardScreen extends Screen {
     }
 
     @Override
-    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        renderBackground(graphics);
-        Sprites.NETWORK_INTERFACE_CARD_SCREEN.draw(graphics, left, top);
+    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
+        renderBackground(stack);
+        Sprites.NETWORK_INTERFACE_CARD_SCREEN.draw(stack, left, top);
 
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        super.render(stack, mouseX, mouseY, partialTicks);
 
         final int blockX = left + BLOCK_LEFT;
         final int blockY = top + BLOCK_TOP;
@@ -164,7 +164,7 @@ public final class NetworkInterfaceCardScreen extends Screen {
             //renderTooltip(stack, tooltip, mouseX, mouseY);
         }
 
-        graphics.drawWordWrap(font, INFO_TEXT, left + INFO_TEXT_LEFT, top + INFO_TEXT_TOP, INFO_TEXT_WIDTH, 0xAAAAAA);
+        font.drawWordWrap(INFO_TEXT, left + INFO_TEXT_LEFT, top + INFO_TEXT_TOP, INFO_TEXT_WIDTH, 0xAAAAAA);
     }
 
     @Override
@@ -195,8 +195,8 @@ public final class NetworkInterfaceCardScreen extends Screen {
         @Nullable
         private Direction getFocusedSide(final float mouseX, final float mouseY, final Vector3f rotation) {
             // Rotate ray inversely around block to represent visual block rotation.
-            final Quaternionf quaternion = new Quaternionf().rotateXYZ(rotation.x, rotation.y, rotation.z);
-            quaternion.conjugate();
+            final Quaternion quaternion = Quaternion.fromXYZDegrees(rotation);
+            quaternion.conj();
 
             // Move ray in screen space to mouse position.
             final float relMouseX = -mouseX / (float) BLOCK_RENDER_SIZE;
@@ -204,11 +204,11 @@ public final class NetworkInterfaceCardScreen extends Screen {
 
             final Vector3f source = new Vector3f();
             source.add(relMouseX, relMouseY, 1);
-            source.rotate(quaternion);
+            source.transform(quaternion);
 
             final Vector3f target = new Vector3f();
             target.add(relMouseX, relMouseY, -1);
-            target.rotate(quaternion);
+            target.transform(quaternion);
 
             // Intersect rotated ray with bounding box representing block.
             final AABB aabb = new AABB(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5);
@@ -224,13 +224,13 @@ public final class NetworkInterfaceCardScreen extends Screen {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            final Vector3f renderRotation = new Vector3f(rotation.x, rotation.y, rotation.z);
+            final Vector3f renderRotation = new Vector3f(rotation.x(), rotation.y(), rotation.z());
             renderRotation.add(0, 180, 0);
 
             final PoseStack stack = RenderSystem.getModelViewStack();
             stack.pushPose();
             stack.translate(x, y, 0);
-            stack.mulPose(new Quaternionf().rotateXYZ(renderRotation.x, renderRotation.y, renderRotation.z));
+            stack.mulPose(Quaternion.fromXYZDegrees(renderRotation));
             stack.scale(BLOCK_RENDER_SIZE, -BLOCK_RENDER_SIZE, BLOCK_RENDER_SIZE);
             RenderSystem.applyModelViewMatrix();
 
@@ -244,7 +244,7 @@ public final class NetworkInterfaceCardScreen extends Screen {
         }
 
         private void renderBlock(final MultiBufferSource.BufferSource bufferSource) {
-            itemRenderer.render(computerItemStack, ItemDisplayContext.NONE, false, new PoseStack(), bufferSource, 0xF000F0, OverlayTexture.NO_OVERLAY, model);
+            itemRenderer.render(computerItemStack, ItemTransforms.TransformType.NONE, false, new PoseStack(), bufferSource, 0xF000F0, OverlayTexture.NO_OVERLAY, model);
         }
 
         private void renderOverlays(final PoseStack poseStack, final MultiBufferSource.BufferSource bufferSource) {
@@ -267,7 +267,7 @@ public final class NetworkInterfaceCardScreen extends Screen {
                     case EAST -> new Vector3f(0, 90, 0);
                     default -> throw new IllegalStateException("Unexpected value: " + side);
                 };
-                poseStack.mulPose(new Quaternionf().rotateXYZ(sideRotation.x, sideRotation.y, sideRotation.z));
+                poseStack.mulPose(Quaternion.fromXYZDegrees(sideRotation));
 
                 poseStack.translate(-0.5, -0.5, 0);
 

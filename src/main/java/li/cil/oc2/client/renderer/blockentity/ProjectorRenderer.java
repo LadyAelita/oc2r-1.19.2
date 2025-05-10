@@ -4,10 +4,11 @@ package li.cil.oc2.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector4f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
+
 import li.cil.oc2.api.API;
 import li.cil.oc2.client.renderer.ModRenderType;
 import li.cil.oc2.client.renderer.ProjectorDepthRenderer;
@@ -81,17 +82,17 @@ public final class ProjectorRenderer implements BlockEntityRenderer<ProjectorBlo
         final Matrix4f matrix = stack.last().pose();
 
         final Vector4f lookDirection = new Vector4f(0, 0, -1, 0);
-        lookDirection.mul(matrix);
+        lookDirection.transform(matrix);
 
         final Vector4f relativePosition = new Vector4f(0, 0, 1, 1);
-        relativePosition.mul(matrix);
+        relativePosition.transform(matrix);
 
         return relativePosition.dot(lookDirection) < ProjectorBlockEntity.MAX_RENDER_DISTANCE;
     }
 
     private void alignToFrontFace(final ProjectorBlockEntity projector, final PoseStack stack) {
         final Direction blockFacing = projector.getBlockState().getValue(ProjectorBlock.FACING);
-        final Quaternionf rotation = Axis.YN.rotationDegrees(blockFacing.toYRot());
+        final Quaternion rotation = Vector3f.YN.rotationDegrees(blockFacing.toYRot());
         stack.translate(0.5f, 0, 0.5f);
         stack.mulPose(rotation);
     }

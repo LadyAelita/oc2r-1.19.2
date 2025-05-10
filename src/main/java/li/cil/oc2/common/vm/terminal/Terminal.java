@@ -3,6 +3,8 @@ package li.cil.oc2.common.vm.terminal;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+
 import it.unimi.dsi.fastutil.bytes.ByteArrayFIFOQueue;
 import li.cil.ceres.api.Serialized;
 import li.cil.oc2.common.vm.terminal.escapes.apc.APCManager;
@@ -21,7 +23,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -947,7 +948,7 @@ public class Terminal {
                 }
                 BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
-                final Matrix4f matrix = new Matrix4f().translate(0, row * CHAR_HEIGHT, 0);
+                final Matrix4f matrix = Matrix4f.createTranslateMatrix(0, row * CHAR_HEIGHT, 0);
 
                 builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 
@@ -957,10 +958,10 @@ public class Terminal {
                 BufferBuilder.RenderedBuffer rb = builder.end();
 
                 if (lines[row] == null) {
-                    lines[row] = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+                    lines[row] = new VertexBuffer();
                 } else if (lines[row] != null) {
                     lines[row].close();
-                    lines[row] = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+                    lines[row] = new VertexBuffer();
                 }
 
                 if (!lines[row].isInvalid()) {

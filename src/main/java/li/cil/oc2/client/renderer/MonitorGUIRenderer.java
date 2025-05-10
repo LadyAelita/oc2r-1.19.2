@@ -7,6 +7,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
 import li.cil.oc2.jcodec.common.model.Picture;
@@ -16,7 +18,6 @@ import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -156,11 +157,11 @@ public class MonitorGUIRenderer {
 
                     final BufferBuilder builder = Tesselator.getInstance().getBuilder();
 
-                    RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorting.ORTHOGRAPHIC_Z);
+                    RenderSystem.setProjectionMatrix(projectionMatrix);
 
                     RenderSystem.setShaderTexture(0, texture.getId());
 
-                    VertexBuffer buffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
+                    VertexBuffer buffer = new VertexBuffer();
 
                     builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
                     builder.vertex(0, 0, 0).uv(0, 0).endVertex();

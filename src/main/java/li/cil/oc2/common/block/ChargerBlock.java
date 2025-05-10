@@ -14,15 +14,14 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
 
 import javax.annotation.Nullable;
 
 public final class ChargerBlock extends HalfTransparentBlock implements EntityBlock {
     public ChargerBlock() {
         super(Properties
-            .of()
-            .mapColor(MapColor.METAL)
+            .of(Material.METAL)
             .sound(SoundType.METAL)
             .strength(1.5f, 6.0f));
         registerDefaultState(getStateDefinition().any().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH));

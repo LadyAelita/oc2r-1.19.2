@@ -86,7 +86,7 @@ public final class NetworkTunnelContainer extends AbstractContainer {
     public void removed(final Player player) {
         super.removed(player);
 
-        if (!player.level().isClientSide()) {
+        if (!player.level.isClientSide()) {
             clearContainer(player, linkSlot);
         }
     }

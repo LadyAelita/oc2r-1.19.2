@@ -78,7 +78,7 @@ public final class Main {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
             context.getModEventBus().register(ClientSetup.class));
 
-        ItemGroup.TAB_REGISTER.register(context.getModEventBus());
+        // ItemGroup.TAB_REGISTER.register(context.getModEventBus());
 
         NativeLoader.loadLibrary();
     }

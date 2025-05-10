@@ -3,51 +3,53 @@
 package li.cil.oc2.data;
 
 import li.cil.oc2.common.block.Blocks;
-import net.minecraft.data.PackOutput;
-import net.minecraft.data.loot.BlockLootSubProvider;
-import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootTables;
+import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import com.mojang.datafixers.util.Pair;
 
 import static java.util.Collections.singletonList;
 import static li.cil.oc2.common.Constants.*;
 
 public final class ModLootTableProvider extends LootTableProvider {
-    public ModLootTableProvider(final PackOutput output, final Set<ResourceLocation> additionalTables, final List<SubProviderEntry> subProviders) {
-        super(output, additionalTables, subProviders);
+    public ModLootTableProvider(final DataGenerator output) {
+        super(output);
     }
 
     @Override
-    public List<SubProviderEntry> getTables() {
-        return singletonList(
-            new LootTableProvider.SubProviderEntry(
-                ModBlockLootTables::new,
-                LootContextParamSets.BLOCK
-            )
-        );
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
+        map.forEach((location, table) -> LootTables.validate(validationtracker, location, table));
     }
 
-    public static final class ModBlockLootTables extends BlockLootSubProvider {
-        public ModBlockLootTables() {
-            super(Collections.emptySet(), FeatureFlags.REGISTRY.allFlags());
-        }
+    @Override
+    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+        return singletonList(Pair.of(ModBlockLootTables::new, LootContextParamSets.BLOCK));
+    }
 
+    public static final class ModBlockLootTables extends BlockLoot {
         @Override
-        protected void generate() {
+        protected void addTables() {
             dropSelf(Blocks.CHARGER.get());
             add(Blocks.COMPUTER.get(), this::droppingWithInventory);
             dropSelf(Blocks.DISK_DRIVE.get());

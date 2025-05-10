@@ -4,6 +4,8 @@ package li.cil.oc2.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.math.Matrix4f;
+
 import li.cil.oc2.client.renderer.MonitorGUIRenderer;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
 import li.cil.oc2.common.container.AbstractMonitorContainer;
@@ -12,12 +14,10 @@ import li.cil.oc2.common.network.message.MonitorInputMessage;
 import li.cil.oc2.common.vm.terminal.Terminal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -49,17 +49,17 @@ public final class MonitorDisplayWidget {
         this.container = this.parent.getMenu();
     }
 
-    public void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY) {
+    public void renderBackground(final PoseStack stack, final int mouseX, final int mouseY) {
         isMouseOverTerminal = isMouseOverTerminal(mouseX, mouseY);
 
-        Sprites.MONITOR_SCREEN.draw(graphics, leftPos, topPos);
+        Sprites.MONITOR_SCREEN.draw(stack, leftPos, topPos);
 
         if (shouldCaptureInput()) {
-            Sprites.MONITOR_FOCUSED.draw(graphics, leftPos, topPos);
+            Sprites.MONITOR_FOCUSED.draw(stack, leftPos, topPos);
         }
     }
 
-    public void render(final GuiGraphics graphics, @Nullable final Component error) {
+    public void render(final PoseStack stack, @Nullable final Component error) {
         if (container.getPowerState() && container.isMounted() && container.hasPower()) {
             final PoseStack terminalStack = new PoseStack();
             terminalStack.translate(leftPos + TERMINAL_X, topPos + TERMINAL_Y, 0);
@@ -69,7 +69,7 @@ public final class MonitorDisplayWidget {
                 rendererView = container.getMonitor().getMonitor().getRenderer(container.getMonitor());
             }
 
-            final Matrix4f projectionMatrix = (new Matrix4f()).setOrtho(0, parent.width, parent.height, 0, -10f, 10f);
+            final Matrix4f projectionMatrix = Matrix4f.orthographic(0, parent.width, 0, parent.height, -10f, 10f);
             rendererView.render(terminalStack, projectionMatrix, MonitorDevice.WIDTH, MonitorDevice.HEIGHT);
         } else if (container.getPowerState()) {
             final Font font = getClient().font;
@@ -79,7 +79,7 @@ public final class MonitorDisplayWidget {
                 final int textOffsetY = (Sprites.MONITOR_SCREEN.height - font.lineHeight) / 2;
                 drawShadow(
                     font,
-                    graphics,
+                    stack,
                     error,
                     leftPos + textOffsetX,
                     topPos + textOffsetY,
@@ -89,9 +89,9 @@ public final class MonitorDisplayWidget {
         }
     }
 
-    private void drawShadow(Font font, GuiGraphics graphics, Component text, float x, float y, int color) {
+    private void drawShadow(Font font, PoseStack stack, Component text, float x, float y, int color) {
         var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        font.drawInBatch(text, x, y, color, true, graphics.pose().last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880);
+        font.drawInBatch(text, x, y, color, true, stack.last().pose(), batch, false, 0, 15728880);
         batch.endBatch();
     }
 

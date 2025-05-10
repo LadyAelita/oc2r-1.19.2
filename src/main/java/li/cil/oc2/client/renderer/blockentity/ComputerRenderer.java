@@ -9,8 +9,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import org.joml.Matrix4f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
+
 import li.cil.oc2.api.API;
 import li.cil.oc2.client.renderer.ModRenderType;
 import li.cil.oc2.common.block.ComputerBlock;
@@ -84,7 +85,7 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
 
         // Align with front face of block.
         stack.translate(0.5f, 0, 0.5f);
-        stack.mulPose(Axis.YN.rotationDegrees(blockFacing.toYRot() + 180));
+        stack.mulPose(Vector3f.YN.rotationDegrees(blockFacing.toYRot() + 180));
         stack.translate(-0.5f, 0, -0.5f);
 
         // Flip and align with top left corner.
@@ -219,13 +220,13 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
 
     private void draw(Font font, PoseStack stack, Component text, float x) {
         var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        font.drawInBatch(text, x, (float) 0, 15610658, false, stack.last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880);
+        font.drawInBatch(text, x, (float) 0, 15610658, false, stack.last().pose(), batch, false, 0, 15728880);
         batch.endBatch();
     }
 
     private void draw(Font font, PoseStack stack, String text, float y) {
         var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        font.drawInBatch(text, (float) 0, y, 15610658, false, stack.last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880, false);
+        font.drawInBatch(text, (float) 0, y, 15610658, false, stack.last().pose(), batch, false, 0, 15728880, false);
         batch.endBatch();
     }
 

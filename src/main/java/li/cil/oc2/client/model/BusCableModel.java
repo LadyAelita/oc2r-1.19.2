@@ -12,7 +12,13 @@ import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import java.util.function.Function;
 
+import com.mojang.datafixers.util.Pair;
+
 import static java.util.Objects.requireNonNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
 public final class BusCableModel implements IUnbakedGeometry<BusCableModel> {
     private static final ResourceLocation BUS_CABLE_STRAIGHT_MODEL = ResourceLocation.fromNamespaceAndPath(API.MOD_ID, "block/cable_straight");
@@ -26,7 +32,7 @@ public final class BusCableModel implements IUnbakedGeometry<BusCableModel> {
     ///////////////////////////////////////////////////////////////////
 
     @Override
-    public BakedModel bake(final IGeometryBakingContext owner, final ModelBaker baker, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
+    public BakedModel bake(final IGeometryBakingContext owner, final ModelBakery baker, final Function<Material, TextureAtlasSprite> spriteGetter, final ModelState modelTransform, final ItemOverrides overrides, final ResourceLocation modelLocation) {
         final BakedModel bakedBaseModel = proxy.bake(owner, baker, spriteGetter, modelTransform, overrides, modelLocation);
         final BakedModel[] straightModelByAxis = {
             requireNonNull(baker.bake(BUS_CABLE_STRAIGHT_MODEL, BlockModelRotation.X0_Y90, spriteGetter)),
@@ -43,5 +49,17 @@ public final class BusCableModel implements IUnbakedGeometry<BusCableModel> {
         };
 
         return new BusCableBakedModel(bakedBaseModel, straightModelByAxis, supportModelByFace);
+    }
+
+    @Override
+    public Collection<Material> getMaterials(
+        IGeometryBakingContext owner,
+        Function<ResourceLocation, UnbakedModel> modelGetter,
+        Set<Pair<String, String>> missingTextureErrors
+    ) {
+        final ArrayList<Material> textures = new ArrayList<>(proxy.getMaterials(owner, modelGetter, missingTextureErrors));
+        textures.addAll(modelGetter.apply(BUS_CABLE_STRAIGHT_MODEL).getMaterials(modelGetter, missingTextureErrors));
+        textures.addAll(modelGetter.apply(BUS_CABLE_SUPPORT_MODEL).getMaterials(modelGetter, missingTextureErrors));
+        return textures;
     }
 }

@@ -2,7 +2,7 @@
 
 package li.cil.oc2.client.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 public abstract class ToggleImageButton extends ImageButton {
     private final Sprite activeImage;
@@ -31,10 +31,10 @@ public abstract class ToggleImageButton extends ImageButton {
     }
 
     @Override
-    protected void renderBackground(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTicks);
+    protected void renderBackground(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
+        super.renderBackground(stack, mouseX, mouseY, partialTicks);
         if (isToggled()) {
-            activeImage.draw(graphics, x, y);
+            activeImage.draw(stack, x, y);
         }
     }
 }

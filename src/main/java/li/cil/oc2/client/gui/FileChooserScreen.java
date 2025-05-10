@@ -2,11 +2,11 @@
 
 package li.cil.oc2.client.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -23,7 +23,6 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static li.cil.oc2.common.util.TranslationUtils.text;
 
@@ -123,11 +122,11 @@ public final class FileChooserScreen extends Screen {
     }
 
     @Override
-    public void render(final GuiGraphics graphics, final int mouseX, final int mouseY, final float partialTicks) {
-        super.renderBackground(graphics);
-        fileList.render(graphics, mouseX, mouseY, partialTicks);
-        fileNameTextField.render(graphics, mouseX, mouseY, partialTicks);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void render(final PoseStack stack, final int mouseX, final int mouseY, final float partialTicks) {
+        super.renderBackground(stack);
+        fileList.render(stack, mouseX, mouseY, partialTicks);
+        fileNameTextField.render(stack, mouseX, mouseY, partialTicks);
+        super.render(stack, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -159,8 +158,8 @@ public final class FileChooserScreen extends Screen {
         final int buttonTop = fileNameTop + TEXT_FIELD_HEIGHT + WIDGET_SPACING;
         final int buttonCount = 2;
         final int buttonWidth = widgetsWidth / buttonCount - WIDGET_SPACING;
-        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed, Supplier::get));
-        addRenderableWidget(new Button(MARGIN + buttonWidth + WIDGET_SPACING, buttonTop, buttonWidth, BUTTON_HEIGHT, CANCEL_TEXT, this::handleCancelPressed, Supplier::get));
+        okButton = addRenderableWidget(new Button(MARGIN, buttonTop, buttonWidth, BUTTON_HEIGHT, Component.empty(), this::handleOkPressed));
+        addRenderableWidget(new Button(MARGIN + buttonWidth + WIDGET_SPACING, buttonTop, buttonWidth, BUTTON_HEIGHT, CANCEL_TEXT, this::handleCancelPressed));
 
         fileList.refreshFiles(directory);
 
@@ -376,14 +375,14 @@ public final class FileChooserScreen extends Screen {
             }
 
             @Override
-            public void render(final GuiGraphics graphics, final int index, final int top, final int left, final int width, final int height,
+            public void render(final PoseStack stack, final int index, final int top, final int left, final int width, final int height,
                                final int mouseX, final int mouseY, final boolean isHovered, final float deltaTime) {
-                drawShadow(font, graphics, displayName, left, top, 0xFFFFFFFF);
+                drawShadow(font, stack, displayName, left, top, 0xFFFFFFFF);
             }
 
-            private void drawShadow(Font font, GuiGraphics graphics, Component text, float x, float y, int color) {
+            private void drawShadow(Font font, PoseStack stack, Component text, float x, float y, int color) {
                 var batch = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                font.drawInBatch(text, x, y, color, true, graphics.pose().last().pose(), batch, Font.DisplayMode.NORMAL, 0, 15728880);
+                font.drawInBatch(text, x, y, color, true, stack.last().pose(), batch, false, 0, 15728880);
                 batch.endBatch();
             }
 
