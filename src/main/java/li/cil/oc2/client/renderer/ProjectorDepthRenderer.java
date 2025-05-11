@@ -25,6 +25,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import javax.annotation.Nullable;
+
+import org.lwjgl.opengl.GL11;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +88,7 @@ public final class ProjectorDepthRenderer {
         final var prevShader = RenderSystem.getShader();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
 
