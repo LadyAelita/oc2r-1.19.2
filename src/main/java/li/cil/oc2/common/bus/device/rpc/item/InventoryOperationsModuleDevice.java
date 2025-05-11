@@ -212,25 +212,24 @@ public final class InventoryOperationsModuleDevice extends AbstractItemRPCDevice
     }
 
     private Stream<IItemHandler> getItemStackHandlersInDirection(final Direction direction) {
-        return getItemStackHandlersAt(Vec3.atCenterOf(entity.blockPosition().relative(direction)), direction.getOpposite());
+        return getItemStackHandlersAt(entity.blockPosition().relative(direction), direction.getOpposite());
     }
 
-    private Stream<IItemHandler> getItemStackHandlersAt(final Vec3 position, final Direction side) {
+    private Stream<IItemHandler> getItemStackHandlersAt(final BlockPos position, final Direction side) {
         return Stream.concat(getEntityItemHandlersAt(position, side), getBlockItemHandlersAt(position, side));
     }
 
-    private Stream<IItemHandler> getEntityItemHandlersAt(final Vec3 position, final Direction side) {
-        final AABB bounds = AABB.unitCubeFromLowerCorner(position.subtract(0.5, 0.5, 0.5));
+    private Stream<IItemHandler> getEntityItemHandlersAt(final BlockPos position, final Direction side) {
+        final Vec3 lowerCornerPos = Vec3.atLowerCornerOf(position);
+        final AABB bounds = AABB.unitCubeFromLowerCorner(lowerCornerPos);
         return entity.level.getEntities(entity, bounds).stream()
             .map(e -> e.getCapability(Capabilities.itemHandler(), side))
             .filter(LazyOptional::isPresent)
             .map(c -> c.orElseThrow(AssertionError::new));
     }
 
-    private Stream<IItemHandler> getBlockItemHandlersAt(final Vec3 position, final Direction side) {
-        Vec3i posi = new Vec3i((int) position.x, (int) position.y, (int) position.z);
-        final BlockPos pos = new BlockPos(posi);
-        final BlockEntity blockEntity = entity.level.getBlockEntity(pos);
+    private Stream<IItemHandler> getBlockItemHandlersAt(final BlockPos position, final Direction side) {
+        final BlockEntity blockEntity = entity.level.getBlockEntity(position);
         if (blockEntity == null) {
             return Stream.empty();
         }
