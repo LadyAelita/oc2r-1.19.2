@@ -16,6 +16,7 @@ import li.cil.oc2.api.API;
 import li.cil.oc2.client.renderer.ModRenderType;
 import li.cil.oc2.common.block.ComputerBlock;
 import li.cil.oc2.common.blockentity.ComputerBlockEntity;
+import li.cil.oc2.common.config.Config;
 import li.cil.oc2.common.util.ChainableVertexConsumer;
 import li.cil.oc2.common.vm.terminal.Terminal;
 import net.minecraft.client.gui.Font;
@@ -136,8 +137,9 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
     ///////////////////////////////////////////////////////////////////
 
     private void renderTerminal(final ComputerBlockEntity computer, final PoseStack stack, final MultiBufferSource bufferSource, final Vec3 cameraPosition) {
-        // Render terminal content if close enough.
-        if (Vec3.atCenterOf(computer.getBlockPos()).closerThan(cameraPosition, 6f)) {
+        // Render terminal content only if close enough.
+        final boolean isClose = Config.screenDetailRenderDistance >= 0.0 && Vec3.atCenterOf(computer.getBlockPos()).closerThan(cameraPosition, Config.screenDetailRenderDistance);
+        if (isClose) {
             stack.pushPose();
             stack.translate(2, 2, -0.9f);
 

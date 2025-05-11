@@ -76,6 +76,8 @@ public final class Config {
     public static GUISpec.CaptureInputMode captureInputMode = GUISpec.CaptureInputMode.PER_BLOCK;
     public static boolean captureInputDefaultState = false;
 
+    public static double screenDetailRenderDistance = 6.0;
+
     public static boolean computersUseEnergy() {
         return computerEnergyPerTick > 0 && computerEnergyStorage > 0;
     }

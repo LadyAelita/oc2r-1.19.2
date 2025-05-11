@@ -19,6 +19,7 @@ import li.cil.oc2.common.Constants;
 import li.cil.oc2.common.block.MonitorBlock;
 import li.cil.oc2.common.blockentity.MonitorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.MonitorDevice;
+import li.cil.oc2.common.config.Config;
 import li.cil.oc2.common.util.ChainableVertexConsumer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -115,7 +116,8 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
 
     private void renderTerminal(final MonitorBlockEntity monitor, final PoseStack stack, final MultiBufferSource bufferSource, final Vec3 cameraPosition) {
         // Render terminal content if close enough.
-        if (Vec3.atCenterOf(monitor.getBlockPos()).closerThan(cameraPosition, 6f)) {
+        final boolean isClose = Config.screenDetailRenderDistance >= 0.0 && Vec3.atCenterOf(monitor.getBlockPos()).closerThan(cameraPosition, Config.screenDetailRenderDistance);
+        if (isClose) {
             stack.pushPose();
             stack.translate(2, 2, -0.9f);
 
