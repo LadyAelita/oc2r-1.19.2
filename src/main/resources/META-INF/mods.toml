@@ -6,12 +6,14 @@ license = "MIT"
 [[mods]]
 modId = "oc2r"
 version = "${file.jarVersion}"
-displayName = "OpenComputers II: Reimagined"
-authors = "North Western Development (Originally by Sangar)"
+displayName = "OpenComputers II: Relesbified"
+authors = "North Western Development (Originally by Sangar), backported by Aelita & Stella"
 description = '''
 Modern computers for the modern player.
 
 This mod uses the Terminus Font under the Open Font License. The full license can be found in the JAR of this mod.
+
+This is a fork of a fork of a fork - OpenComputers II: Reimagined backported to 1.19.2, with small changes for shader compatibility.
 '''
 
 [[dependencies.oc2r]]
