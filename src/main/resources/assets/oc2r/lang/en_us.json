@@ -1,5 +1,5 @@
 {
-  "item_group.oc2r.common": "OpenComputers II",
+  "itemGroup.oc2r.common": "OpenComputers II",
 
   "block.oc2r.computer": "Computer",
   "block.oc2r.computer.desc": "Runs software from Flash Memory and Hard Disks.",
@@ -28,6 +28,8 @@
   "block.oc2r.keyboard.desc": "Allows keyboard input when using a projector.",
   "block.oc2r.internet_gateway": "Internet Gateway",
   "block.oc2r.internet_gateway.desc": "Gives access to the Internet.",
+  "block.oc2r.vxlan_hub": "VXLAN Hub",
+  "block.oc2r.pci_card_cage": "PCI Card Cage",
 
   "item.oc2r.wrench": "Scrench",
   "item.oc2r.wrench.desc": "Configures devices and dismantles them (while sneaking).",
