@@ -138,7 +138,7 @@ public final class ComputerRenderer implements BlockEntityRenderer<ComputerBlock
 
     private void renderTerminal(final ComputerBlockEntity computer, final PoseStack stack, final MultiBufferSource bufferSource, final Vec3 cameraPosition) {
         // Render terminal content only if close enough.
-        final boolean isClose = Config.screenDetailRenderDistance >= 0.0 && Vec3.atCenterOf(computer.getBlockPos()).closerThan(cameraPosition, Config.screenDetailRenderDistance);
+        final boolean isClose = Config.computerDetailRenderDistance >= 0.0 && Vec3.atCenterOf(computer.getBlockPos()).closerThan(cameraPosition, Config.computerDetailRenderDistance);
         if (isClose) {
             stack.pushPose();
             stack.translate(2, 2, -0.9f);

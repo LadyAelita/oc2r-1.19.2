@@ -116,7 +116,7 @@ public final class MonitorRenderer implements BlockEntityRenderer<MonitorBlockEn
 
     private void renderTerminal(final MonitorBlockEntity monitor, final PoseStack stack, final MultiBufferSource bufferSource, final Vec3 cameraPosition) {
         // Render terminal content if close enough.
-        final boolean isClose = Config.screenDetailRenderDistance >= 0.0 && Vec3.atCenterOf(monitor.getBlockPos()).closerThan(cameraPosition, Config.screenDetailRenderDistance);
+        final boolean isClose = Config.monitorDetailRenderDistance >= 0.0 && Vec3.atCenterOf(monitor.getBlockPos()).closerThan(cameraPosition, Config.monitorDetailRenderDistance);
         if (isClose) {
             stack.pushPose();
             stack.translate(2, 2, -0.9f);
