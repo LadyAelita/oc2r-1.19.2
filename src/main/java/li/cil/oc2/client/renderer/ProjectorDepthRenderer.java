@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import li.cil.oc2.common.block.ProjectorBlock;
 import li.cil.oc2.common.blockentity.ProjectorBlockEntity;
 import li.cil.oc2.common.bus.device.vm.block.ProjectorDevice;
@@ -19,13 +20,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
-
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -89,7 +87,7 @@ public final class ProjectorDepthRenderer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
-        RenderSystem.disableDepthTest();
+        RenderSystem.enableDepthTest();
 
         PoseStack poseStack = event.getPoseStack();
 
@@ -97,7 +95,7 @@ public final class ProjectorDepthRenderer {
             DynamicTexture texture = getProjectedTexture(projector);
             if (texture == null) continue;
 
-            projector.onRendering(); // <-- Trigger the framebuffer update!
+            projector.onRendering();
 
             Direction facing = projector.getBlockState().getValue(ProjectorBlock.FACING);
             Vec3 basePos = Vec3.atCenterOf(projector.getBlockPos());
@@ -105,8 +103,17 @@ public final class ProjectorDepthRenderer {
             poseStack.pushPose();
             poseStack.translate(basePos.x - camPos.x, basePos.y - camPos.y, basePos.z - camPos.z);
             poseStack.mulPose(facing.getRotation());
-            poseStack.translate(-0.5, -0.375, 0.51); // Center and lift slightly
-            poseStack.scale(1.0f, 0.75f, 1.0f); // Aspect ratio scale
+
+            final float ratio = ProjectorDevice.HEIGHT / (float) ProjectorDevice.WIDTH;
+            final float ratioComplement = 1.0f - ratio;
+
+            final float distance = 5.0f;
+            final float scale = distance;
+
+            poseStack.translate(0.5, 0.5 + distance - 0.01, 0.5 + (distance - 1) * 0.2);
+            poseStack.translate(0.5 * (scale - 1), 0, 0);
+            poseStack.mulPose(Vector3f.XP.rotationDegrees(90));
+            poseStack.scale(-1.0f * scale, -ratio * scale, 1.0f * scale);
 
             RenderSystem.setShaderTexture(0, texture.getId());
             Matrix4f matrix = poseStack.last().pose();
@@ -117,7 +124,6 @@ public final class ProjectorDepthRenderer {
 
         RenderSystem.setShader(() -> prevShader);
         RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
         VISIBLE_PROJECTORS.clear();
     }
