@@ -102,6 +102,9 @@ public final class ClientSetup {
         event.addSprite(ComputerRenderer.OVERLAY_STATUS_LOCATION);
         event.addSprite(ComputerRenderer.OVERLAY_TERMINAL_LOCATION);
 
+        event.addSprite(MonitorRenderer.OVERLAY_POWER_LOCATION);
+        event.addSprite(MonitorRenderer.OVERLAY_TERMINAL_LOCATION);
+
         event.addSprite(ChargerRenderer.EFFECT_LOCATION);
     }
 
