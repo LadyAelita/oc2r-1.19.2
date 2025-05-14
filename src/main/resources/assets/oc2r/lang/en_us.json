@@ -78,6 +78,8 @@
   "item.oc2r.network_tunnel_module.desc": "Sends and receives network packets to a linked device.",
   "item.oc2r.internet_card": "Internet Card",
   "item.oc2r.internet_card.desc": "Gives access to the Internet",
+  "item.oc2r.robot_mobility_module": "Robot Mobility Module",
+  "item.oc2r.robot_mobility_module.desc": "Enables robots to move.",
 
   "item.oc2r.transistor": "Transistor",
   "item.oc2r.transistor.desc": "Crafting material.",

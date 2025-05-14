@@ -43,6 +43,7 @@ public final class ProviderRegistry {
         ITEM_DEVICE_PROVIDERS.register("inventory_operations_module", InventoryOperationsModuleDeviceProvider::new);
         ITEM_DEVICE_PROVIDERS.register("block_operations_module", BlockOperationsModuleDeviceProvider::new);
         ITEM_DEVICE_PROVIDERS.register("network_tunnel_module", NetworkTunnelModuleItemDeviceProvider::new);
+        ITEM_DEVICE_PROVIDERS.register("robot_mobility_module", RobotMobilityModuleDeviceProvider::new);
 
         ITEM_DEVICE_PROVIDERS.register("network_interface_card", NetworkInterfaceCardItemDeviceProvider::new);
         ITEM_DEVICE_PROVIDERS.register("network_tunnel_card", NetworkTunnelCardItemDeviceProvider::new);

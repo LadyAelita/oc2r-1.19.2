@@ -33,6 +33,7 @@ public class EnergySpec {
     public final ForgeConfigSpec.IntValue blockOperationsModuleEnergyPerTick;
     public final ForgeConfigSpec.IntValue inventoryOperationsModuleEnergyPerTick;
     public final ForgeConfigSpec.IntValue networkTunnelEnergyPerTick;
+    public final ForgeConfigSpec.IntValue robotMobilityEnergyPerTick;
 
     EnergySpec(ForgeConfigSpec.Builder builder) {
         builder.push("blocks");
@@ -123,6 +124,9 @@ public class EnergySpec {
         networkTunnelEnergyPerTick = builder.comment("The amount of energy consumed per tick for network tunnels")
             .defineInRange("networkTunnelEnergyPerTick", 2, 0, Integer.MAX_VALUE);
 
+        robotMobilityEnergyPerTick = builder.comment("The amount of energy consumed per tick for robot mobility modules")
+            .defineInRange("robotMobilityEnergyPerTick", 1, 0, Integer.MAX_VALUE);
+
         builder.pop();
     }
 
@@ -155,5 +159,6 @@ public class EnergySpec {
         Config.soundCardEnergyPerTick = soundCardEnergyPerTick.get();
         Config.blockOperationsModuleEnergyPerTick = blockOperationsModuleEnergyPerTick.get();
         Config.inventoryOperationsModuleEnergyPerTick = inventoryOperationsModuleEnergyPerTick.get();
+        Config.robotMobilityEnergyPerTick = robotMobilityEnergyPerTick.get();
     }
 }

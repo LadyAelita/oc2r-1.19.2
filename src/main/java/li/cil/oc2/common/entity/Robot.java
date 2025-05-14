@@ -13,6 +13,7 @@ import li.cil.oc2.api.capabilities.TerminalUserProvider;
 import li.cil.oc2.common.config.Config;
 import li.cil.oc2.common.bus.AbstractDeviceBusElement;
 import li.cil.oc2.common.bus.CommonDeviceBusController;
+import li.cil.oc2.common.bus.device.unlocks.item.RobotMobilityModuleDevice;
 import li.cil.oc2.common.bus.device.util.Devices;
 import li.cil.oc2.common.capabilities.Capabilities;
 import li.cil.oc2.common.container.FixedSizeItemStackHandler;
@@ -80,6 +81,7 @@ import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Consumer;
@@ -521,6 +523,16 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         );
     }
 
+    private boolean hasMobilityModule() {
+        final var devices = virtualMachine.busController.getDevices();
+        for (final Device device : devices) {
+            if (device instanceof RobotMobilityModuleDevice) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static float lerpClamped(final float from, final float to, final float delta) {
         if (from < to) {
             return Math.min(from + delta, to);
@@ -904,6 +916,7 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         @Callback(synchronize = false)
         public boolean move(@Parameter("direction") @Nullable final MovementDirection direction) {
             if (direction == null) throw new IllegalArgumentException();
+            if (Config.robotMobilityRequiresModule && !hasMobilityModule()) throw new IllegalStateException("Robot mobility module required to use the .move method");
             return actionProcessor.move(direction);
         }
 

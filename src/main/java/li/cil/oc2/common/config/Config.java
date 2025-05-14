@@ -46,6 +46,8 @@ public final class Config {
     public static int blockOperationsModuleEnergyPerTick = 2;
     public static int inventoryOperationsModuleEnergyPerTick = 1;
     public static int networkTunnelEnergyPerTick = 2;
+    public static boolean robotMobilityRequiresModule = false;
+    public static int robotMobilityEnergyPerTick = 1;
 
     public static ResourceLocation blockOperationsModuleToolTier = TierSortingRegistry.getName(Tiers.DIAMOND);
     public static long soundCardCoolDownSeconds = 2;
