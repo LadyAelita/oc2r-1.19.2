@@ -399,6 +399,14 @@ public final class Robot extends Entity implements li.cil.oc2.api.capabilities.R
         return false;
     }
 
+    @Override
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
+        if (level.isClientSide) {
+            terminal.setDisplayOnly(true);
+        }
+    }
+
     public void exportToItemStack(final ItemStack stack) {
         final CompoundTag itemsTag = NBTUtils.getOrCreateChildTag(stack.getOrCreateTag(), MOD_TAG_NAME, ITEMS_TAG_NAME);
         deviceItems.saveItems(itemsTag); // Puts one tag per device type, as expected by TooltipUtils.
