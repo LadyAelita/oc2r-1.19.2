@@ -85,7 +85,7 @@ public class EnergySpec {
         builder.push("entities");
 
         robotEnergyPerTick = builder.comment("The amount of energy consumed per tick by a robot")
-            .defineInRange("gatewayEnergyStorage", 5, 0, Integer.MAX_VALUE);
+            .defineInRange("robotEnergyPerTick", 5, 0, Integer.MAX_VALUE);
 
         robotEnergyStorage = builder.comment("The amount of energy stored in a robot")
             .defineInRange("robotEnergyStorage", 750000, 0, Integer.MAX_VALUE);
@@ -107,7 +107,7 @@ public class EnergySpec {
             .defineInRange("redstoneInterfaceCardEnergyPerTick", 1, 0, Integer.MAX_VALUE);
 
         networkInterfaceEnergyPerTick = builder.comment("The amount of energy consumed per tick for network interface cards")
-            .defineInRange("redstoneInterfaceCardEnergyPerTick", 1, 0, Integer.MAX_VALUE);
+            .defineInRange("networkInterfaceEnergyPerTick", 1, 0, Integer.MAX_VALUE);
 
         fileImportExportCardEnergyPerTick = builder.comment("The amount of energy consumed per tick for file import/export cards")
             .defineInRange("fileImportExportCardEnergyPerTick", 1, 0, Integer.MAX_VALUE);
